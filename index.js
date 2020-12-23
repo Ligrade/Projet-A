@@ -8,11 +8,11 @@ const config = require("./config.json");
 const client = new Discord.Client();
 //-------------------------------------
 
-
-
-
-
-
+    //----------Power Message---------
+    client.on("ready", () => {
+        console.log("Bot on");
+    });
+    //--------------------------------
 
 
 
