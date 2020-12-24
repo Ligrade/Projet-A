@@ -27,15 +27,6 @@ const client = new Discord.Client();
     client.on('message', msg => {
 
 
-        //------------------------!Alexa-----------------------------
-        if(msg.content.startsWith(`${prefix}alexa`)){
-            if(msg.author.bot) return;
-                let cont = msg.content;
-                chatbot.getReply(cont).then(r => msg.channel.send(r))
-        }
-        //------------------------------------------------------------
-
-
         //--------------------------------------!Ping-----------------------------------------
         if(msg.content.startsWith(`${prefix}ping`)) {
       
@@ -50,9 +41,18 @@ const client = new Discord.Client();
                 embed.setTimestamp()
                 msg.edit(embed)
           })
-        
         }
         //--------------------------------------------------------------------------------------
+
+        
+        //------------------------!Alexa-----------------------------
+        if(msg.content.startsWith(`${prefix}alexa`)){
+            if(msg.author.bot) return;
+                let cont = msg.content;
+                chatbot.getReply(cont).then(r => msg.channel.send(r))
+        }
+        //------------------------------------------------------------
+
 
     });
     //-----------------------------------------------------------------------------------------------------
