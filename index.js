@@ -1,8 +1,11 @@
 //--------------dépendance--------------
 const Discord = require("discord.js");
 const config = require("./config.json");
+const ytdl = require("ytdl-core");
 let alexa = require('alexa-bot-api');
+const { getInfo } = require("ytdl-core");
 const prefix = ("!");
+var list = [];
 //--------------------------------------
 
 
@@ -24,7 +27,7 @@ const client = new Discord.Client();
 
 
     //-----------------------------------------Actions-----------------------------------------------------
-    client.on('message', msg => {
+    client.on('message', async msg => {
 
 
         //--------------------------------------!Ping-----------------------------------------
@@ -54,7 +57,90 @@ const client = new Discord.Client();
         //------------------------------------------------------------
 
 
+        //--------------------------------------yt------------------------------------
+
+        let args = msg.content.split(" ");
+        if(msg.content === prefix + "playlist"){
+            let message = "**File D'attente !**\n";
+            for(var i = 0;i < list.length;i++){
+                let name;
+                await ytdl.getInfo(list[i]).then(info => {
+                    
+                        name = info.videoDetails.title;
+                    
+                });
+                message += "> " + i + " - " + name + "\n";
+            }
+            msg.channel.send(message);
+        }
+        else if(msg.content.startsWith(prefix + "play")){
+            if(msg.member.voice.channel){
+                    
+                
+                if(args[1] == undefined || !args[1].startsWith("https://www.youtube.com/watch?v=")){
+                        msg.reply("Lien de la Vidéo non ou mal mentionné");
+                }
+                else{
+                    if(list.length > 0){
+                            list.push(args[1]);
+                            msg.reply("Vidéo ajouté à la liste.");
+                            
+                    }
+                    else{
+                            list.push(args[1]);
+                            msg.reply("Vidéo ajouté à la liste.");
+                           
+
+                            msg.member.voice.channel.join().then(connection => {
+                                playMusic(connection);
+                                connection.on("disconnect", () => {
+                                    list = [];
+                                });
+                        }).catch(err => {
+                        msg.reply("Erreur lors de la connextion : " + err);
+                        })
+                    }
+                }
+
+            }
+            else{
+                msg.reply("Vous n'êtes pas dans un channel vocal, Veuillez vous y connectez pour faire cette commande.");
+            }
+        }
+        else  if(msg.content.startsWith(prefix + "stop")){
+            msg.reply("Votre bot et déconnecter"); 
+            msg.member.voice.channel.leave();
+        }
+            function playMusic(connection){
+                let dispatcher = connection.play(ytdl(list[0], {quality: "highestaudio"}));
+
+                    dispatcher.on("finish", () => {
+                        list.shift();
+                        dispatcher.destroy();
+
+                        if(list.length > 0){
+                            playMusic(connection);
+                        }
+                        else{
+                            connection.disconnect();
+                        }
+                    })
+
+                dispatcher.on("error", err => {
+                    console.log("Erreur au niveau du dispacher : " + err);
+                    dispatcher.destroy();
+                    connection.disconnect();
+                });
+            }
+
+    
+
+        
     });
+        //----------------------------------------------------------------------------
+
+
+    
     //-----------------------------------------------------------------------------------------------------
 
 
