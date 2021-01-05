@@ -29,6 +29,18 @@ const client = new Discord.Client();
     //-----------------------------------------Actions-----------------------------------------------------
     client.on('message', async msg => {
 
+            if(msg.content.startsWith(`${prefix}help`)) { 
+                let embed = new Discord.MessageEmbed()
+                    .setTitle(':robot: **HELP** :robot:')
+                    .setDescription('`Voici la listes des commandes:`')
+                    .addField('**!play**',"Play <URL>")
+                    .addField('**!stop**',"Stop la musique et le déco")
+                    .addField('**!playlist**',"Affiche les musiques en attente...")
+                    .addField('**!ping**',"Affiche le ping du bot")
+                    .setColor('BLUE')
+                    .setFooter('Projet-A')
+                    msg.channel.send(embed);
+              }
 
         //--------------------------------------!Ping-----------------------------------------
         if(msg.content.startsWith(`${prefix}ping`)) {
